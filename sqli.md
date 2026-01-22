@@ -47,7 +47,7 @@ data extraction using union:
 
 ```
 
-### table and db enumeration using union:
+## table and db enumeration using union:
 
 #### mysql
 ```sql
