@@ -1,0 +1,65 @@
+## initial
+
+Domain Info
+
+  Domain:
+  DC:
+  OS:
+
+SMB (Unauthenticated)
+
+  RID brute
+  
+  LDAP deeper search
+  
+  Check shares for usernames
+  
+  Check web app for usernames
+
+findings:
+
+  
+  LDAP (Anonymous Bind?)
+
+findings:
+
+
+Kerberos
+
+  Kerberoast check:
+  AS-REP roast check:
+
+If Creds Found
+
+  Re-enumerate SMB
+  
+  Re-enumerate LDAP
+  
+  Check WinRM
+  
+  Check RDP
+  
+  Check MSSQL
+  
+  Collect BloodHound
+
+
+## post foothold
+  initial:
+  Who am I:
+  Groups:
+  Privileges:
+  Local admin anywhere:
+  Password reuse:
+
+every new user:
+  SMB shares (auth)
+  LDAP full dump
+  SPNs
+
+
+
+
+
+
+
