@@ -1,0 +1,209 @@
+## initial
+
+Target:
+Port:
+Tech stack identified:
+Backend language:
+Framework:
+Server:
+CMS (if any):
+Version strings found:
+Domain names found:
+
+Check:
+
+ View page source
+
+ Response headers
+
+ Cookies (flags, JWT, session names)
+
+ robots.txt
+
+ sitemap.xml
+
+ .git exposed?
+
+ Backup files?
+
+
+## other initial
+
+Main pages discovered:
+Hidden endpoints:
+API endpoints:
+Upload functionality:
+Admin panels:
+Parameter-heavy pages:
+State-changing functionality (POST/PUT endpoints):
+User input locations identified:
+
+
+## fuzzing
+Fuzzing
+
+Files:
+
+ .php
+
+ .asp / .aspx
+
+ .jsp
+
+ .bak
+
+ .old
+
+ .txt
+
+ .zip
+
+ .env
+
+ config files
+
+__
+
+
+directories found:
+
+
+Subdomain / vhost check:
+
+ vhost fuzz
+
+ hostname header manipulation
+
+
+## auth checking:
+
+Login page:
+
+ Default creds (common pairs)
+
+ Weak creds (username=username)
+
+ SQLi on login
+
+ Response difference analysis
+
+ Account lockout?
+
+ Password reset logic?
+
+ Registration logic abuse?
+
+ Role-based access checks?
+
+If creds found:
+
+ Reuse across services
+
+ Check admin panels
+
+ Check API endpoints
+
+
+## core vulns
+🔹 SQL Injection
+
+ Error-based
+
+ Boolean-based
+
+ Time-based
+
+🔹 Command Injection
+
+ ; && || |
+
+ Newline (%0a)
+
+ $() / backticks
+
+ Blind timing tests
+
+🔹 File Inclusion
+
+ LFI (../ traversal)
+
+ Log poisoning
+
+ /proc/self/environ
+ /proc/self/cmdline
+ /proc/self/cwd
+
+ RFI (if applicable)
+
+🔹 SSTI
+
+Test reflection:
+
+ {{7*7}}
+
+ ${7*7}
+
+ <%= 7*7 %>
+
+If evaluates → escalate.
+
+🔹 XSS
+
+ Reflected
+
+ Stored
+
+ DOM-based
+
+(Useful sometimes for admin takeover.)
+
+
+## file upload
+
+If upload exists:
+
+ Extension bypass
+
+ Double extension
+
+ MIME bypass
+
+ Magic bytes
+
+ Rename after upload?
+
+ Executable in webroot?
+
+ .htaccess upload:
+
+ Upload location discovery
+
+
+## bad access control:
+ IDOR (change ID numbers)
+
+ Forced browsing
+
+ Access admin without auth?
+
+ Modify cookies?
+
+ Change role in JWT?
+
+ jwt/flask cookie cracking:
+
+Session fixation?
+Privilege escalation via parameter tampering?
+
+
+##
+Any debug functionality exposed?
+
+
+
+
+
+
+
+
+
