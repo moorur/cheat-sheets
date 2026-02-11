@@ -1,0 +1,76 @@
+nmap scan:
+full nmap scan:
+nmap version specific:
+nmap --vuln:
+nmap udp scan(nmap -sU --top-ports 100): 
+
+Hostnames discovered:
+Domain name (if any):
+OS guess:
+Filtered ports worth revisiting:
+
+
+_____
+
+After new credentials found → Re-enumerate all services
+
+searchsploit(list all services underneath)
+
+____
+
+if random services, play around with it, list findings here:
+Service:
+Version:
+Auth required: 
+Default creds: 
+File upload: 
+Command execution:
+Known CVE:
+Local access only_
+
+random shit:
+
+
+____
+
+default credentials check on all:
+After new credentials found → Re-enumerate all services
+- Web
+- FTP
+- SSH
+- SMB
+- MSSQL
+- Tomcat
+- Jenkins
+- Anything else:
+
+Re-tested:
+[ ] Web login
+[ ] SMB
+[ ] SSH
+[ ] WinRM
+[ ] RDP
+[ ] MSSQL
+[ ] FTP
+[ ] LDAP
+[ ] Password reuse across users
+
+
+___
+
+
+ftp:
+anonymous login:
+writable directories:
+file upload possible:
+downloaded all files:
+version exploit check:
+interesting findings:
+
+
+
+___
+
+enum4linux findings:
+
+__
