@@ -1,0 +1,276 @@
+🔥 Linux Privilege Escalation Checklist (OSCP-Oriented)
+1️⃣ Initial Context
+Current user:
+Hostname:
+Kernel version:
+Architecture:
+Distribution:
+Shell type:
+
+
+Check:
+
+id
+uname -a
+cat /etc/os-release
+sudo -l
+
+2️⃣ Immediate Wins
+🔹 Sudo
+sudo -l
+
+
+Check:
+
+Can run as root?
+
+NOPASSWD?
+
+Wildcards?
+
+Specific binaries allowed?
+
+Environment variables preserved?
+
+Sudo is one of the most common OSCP wins.
+
+🔹 SUID Binaries
+find / -perm -4000 2>/dev/null
+
+
+Check:
+
+Non-standard binaries
+
+Writable SUID files?
+
+GTFOBins applicable?
+
+Custom programs?
+
+Reminder:
+
+Custom SUID > standard SUID
+
+🔹 Capabilities
+getcap -r / 2>/dev/null
+
+
+Look for:
+
+cap_setuid
+
+cap_setgid
+
+cap_sys_admin
+
+Capabilities are often overlooked.
+
+3️⃣ Cron Jobs
+
+Check:
+
+crontab -l
+cat /etc/crontab
+ls -la /etc/cron*
+
+
+Look for:
+
+Writable scripts?
+
+Writable directories?
+
+Running as root?
+
+Wildcard usage?
+
+Cron misconfigs are common.
+
+4️⃣ Writable Files / Directories
+
+Search for:
+
+Writable directories owned by root
+
+Writable scripts executed by root
+
+Writable service binaries
+
+Key locations:
+
+/etc/
+/opt/
+/usr/local/
+/var/www/
+/home/
+/tmp/
+
+
+Decision trigger:
+
+Is root executing anything from a writable location?
+
+5️⃣ Services / Processes
+
+Check:
+
+ps aux
+
+
+Look for:
+
+Custom services
+
+Services running as root
+
+Paths to service binaries
+
+Misconfigured startup scripts
+
+If systemd:
+
+systemctl list-units --type=service
+
+
+Check:
+
+Writable service files?
+
+Writable ExecStart paths?
+
+6️⃣ Credential Hunting (Very Important)
+
+Search for:
+
+config files
+database credentials
+backup files
+history files
+.env files
+SSH keys
+
+
+Check:
+
+/home/*/.ssh/
+/root/
+/var/www/
+/opt/
+/etc/
+/backup/
+/mnt/
+
+
+Also:
+
+cat ~/.bash_history
+
+
+Credential reuse is huge in OSCP.
+
+7️⃣ NFS
+
+Check:
+
+cat /etc/exports
+
+
+If NFS share:
+
+no_root_squash?
+
+Writable?
+
+Mountable?
+
+NFS misconfig is a classic privesc.
+
+8️⃣ Docker / Containers
+
+Check:
+
+groups
+
+
+If user in:
+
+docker
+lxd
+
+
+Possible container breakout.
+
+Also check:
+
+/var/run/docker.sock
+
+9️⃣ PATH Hijacking
+
+Check:
+
+echo $PATH
+
+
+Look for:
+
+Writable directories in PATH
+
+Root scripts calling binaries without full path
+
+Common trick.
+
+🔟 Kernel Exploits (Last Resort)
+
+Only if:
+
+Old kernel
+
+No misconfigs found
+
+Checklist:
+
+Check exact kernel version
+Search for known privilege escalation exploits
+Verify exploit stability
+Test carefully
+
+
+Do not jump here early.
+
+11️⃣ Network / Internal Services
+
+Sometimes local privesc is:
+
+Redis running as root
+
+MySQL with weak creds
+
+Local-only service accessible
+
+Check:
+
+netstat -tulnp
+ss -tulnp
+
+12️⃣ SSH Keys
+
+Check:
+
+Private keys readable?
+
+Reuse?
+
+Root SSH access allowed?
+
+13️⃣ If Stuck Reminder
+
+Add this at bottom:
+
+Re-check sudo
+Re-check SUID
+Re-check cron
+Re-check writable scripts
+Search for credentials again
+Look for custom binaries
+Think misconfiguration, not exploit
