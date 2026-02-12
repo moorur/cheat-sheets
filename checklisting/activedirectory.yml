@@ -54,9 +54,10 @@ If Creds Found
 
 every new user:
   SMB shares (auth)
+  Bloodhound
   LDAP full dump
   SPNs
-
+  
 
 
 
