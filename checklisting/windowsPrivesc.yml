@@ -1,240 +1,45 @@
-Good. Windows privesc is where people either farm easy points or waste 2 hours.
+Windows Privesc
 
-You don’t want a 20-page encyclopedia.
-You want a decision-driven checklist that forces you to look in the right places fast.
+whoami /all — privileges, groups
 
-Here’s a clean, complete, OSCP-focused Windows PrivEsc template you can expand.
 
-🔥 Windows Privilege Escalation Checklist (OSCP-Oriented)
-1️⃣ Initial Situation
-Current user:
-Hostname:
-OS version:
-Architecture:
-Domain joined? (Y/N)
-Integrity level:
+SeImpersonatePrivilege / SeAssignPrimaryTokenPrivilege → Potato attacks
 
-2️⃣ Basic Context
-whoami /all
 
-Privileges:
-if they show up at all, my user has them
+SeBackupPrivilege → read SAM/SYSTEM
 
-3️⃣ Local Admin Check
-Is current user local admin?
-net localgroup administrators
 
+SeDebugPrivilege → process injection
 
-If yes:
 
-Dump SAM
+systeminfo — OS version, hotfixes, check for kernel exploits
 
-Dump LSASS
 
-Extract credentials
+Running services — sc query, Get-Service, look for non-standard ones
 
-Check reuse
+Writable service binaries or unquoted service paths
 
-Pivot
 
-People forget this step.
+Scheduled tasks — schtasks /query /fo LIST /v
 
-4️⃣ Services (Very Important Section)
 
-Enumerate services.
+AlwaysInstallElevated — check both HKLM and HKCU
 
-Check for:
 
-Unquoted service paths?
-Writable service binary?
-Writable service directory?
-Can modify service config?
-Service running as SYSTEM?
+Writable registry keys for services
 
 
-Decision triggers:
+Stored credentials — cmdkey /list, credential manager, unattend.xml, web.config, Groups.xml in SYSVOL
 
-If path has spaces → unquoted test
 
-If writable → replace binary
+SAM/SYSTEM/SECURITY if readable
 
-If you can change binpath → reconfigure
 
-Services are common OSCP wins.
+Installed software — look for vulnerable versions with local exploits
 
-5️⃣ Scheduled Tasks
-schtasks /query /fo LIST /v
 
+Reused passwords — try everything everywhere
 
-Check:
 
-Running as SYSTEM?
-
-Writable script?
-
-Writable task file?
-
-Custom script path?
-
-6️⃣ Startup / Autoruns
-
-Check:
-
-Startup folders
-
-Registry Run keys
-
-Writable locations?
-
-If writable → replace binary.
-
-7️⃣ Registry Checks
-
-Look for:
-
-AlwaysInstallElevated?
-
-
-Check both:
-
-HKLM
-
-HKCU
-
-If enabled → MSI execution as SYSTEM.
-
-Also check:
-
-Service registry keys writable?
-
-Unquoted paths via registry?
-
-8️⃣ DLL Hijacking Opportunities
-
-Look for:
-
-Missing DLLs
-
-Writable directories in PATH
-
-Custom services loading local DLLs
-
-Trigger:
-
-Process running as SYSTEM?
-Loads DLL from writable location?
-
-9️⃣ Token Impersonation
-
-If:
-
-SeImpersonatePrivilege enabled
-
-
-Then:
-
-Potato-style attack possible?
-
-Named pipe abuse?
-
-PrintSpoofer-like method?
-
-This is one of the most common modern privesc paths.
-
-🔟 Credential Hunting
-
-Search for:
-
-config files
-unattend.xml
-web.config
-sysprep
-saved creds
-registry stored creds
-
-
-Also:
-
-cmdkey /list
-
-
-Saved credentials are often overlooked.
-
-11️⃣ File System Checks
-
-Search for:
-
-Writable program directories
-
-Writable service folders
-
-Sensitive files readable
-
-Backup files
-
-Check:
-
-C:\Program Files
-C:\Program Files (x86)
-C:\inetpub
-C:\xampp
-C:\Users\OtherUsers\
-
-12️⃣ UAC Bypass (If Admin but Not High Integrity)
-
-If:
-
-Local admin
-
-Medium integrity
-
-Check:
-
-Auto-elevated binaries
-
-UAC bypass method
-
-OSCP sometimes includes this.
-
-13️⃣ Kernel Exploits (Last Resort)
-
-Only if:
-
-Old OS
-
-Clearly vulnerable build
-
-No easier path
-
-Checklist:
-
-Check build number
-Match exploit carefully
-Test safely
-
-
-Don’t jump here early.
-
-14️⃣ Domain Context (If Domain Joined)
-
-Ask:
-
-Is this machine domain joined?
-Am I local admin?
-Any domain creds cached?
-LSASS dump viable?
-
-
-Sometimes Windows privesc becomes AD pivot.
-
-🔁 If Stuck Reminder
-
-Add this at bottom:
-
-Re-run manual enumeration.
-Check writable paths again.
-Check services again.
-Check privileges again.
-Search for credentials again.
-Think misconfiguration, not exploit.
+winpeas, but don't rely on it exclusively
 
