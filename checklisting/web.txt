@@ -1,209 +1,58 @@
-## initial
+Web
 
-Target:
-Port:
-Tech stack identified:
-Backend language:
-Framework:
-Server:
-CMS (if any):
-Version strings found:
-Domain names found:
+Enumeration
 
-Check:
+Directory/file fuzzing (feroxbuster/ffuf) with a solid wordlist, include extensions (.php .txt .bak .old .html .js .config)
 
- View page source
 
- Response headers
+Fuzz for vhosts
 
- Cookies (flags, JWT, session names)
 
- robots.txt
+Check robots.txt, sitemap.xml, .git, .env, .htaccess
 
- sitemap.xml
 
- .git exposed?
+View page source on every page — comments, hidden fields, hardcoded credentials
 
- Backup files?
 
+Check all JS files for endpoints, credentials, tokens
 
-## other initial
 
-Main pages discovered:
-Hidden endpoints:
-API endpoints:
-Upload functionality:
-Admin panels:
-Parameter-heavy pages:
-State-changing functionality (POST/PUT endpoints):
-User input locations identified:
+Look at all cookies — decode/inspect them
 
 
-## fuzzing
-Fuzzing
+Check HTTP headers for anything unusual
 
-Files:
 
- .php
+_______________
 
- .asp / .aspx
+Functionality
 
- .jsp
+Test every input field for SQLi, XSS, command injection, SSTI
 
- .bak
 
- .old
+Test file upload — bypass extension filters, content-type, magic bytes
 
- .txt
 
- .zip
+Test for LFI/RFI on any parameter that looks like it loads a file
 
- .env
 
- config files
+Check for IDOR on any ID-based parameters
 
-__
 
+Test authentication — default creds, weak passwords, type juggling, JWT manipulation
 
-directories found:
 
+Check for exposed API endpoints and how they handle unexpected input
 
-Subdomain / vhost check:
 
- vhost fuzz
+Look for verbose error messages — stack traces often reveal code and parameters
 
- hostname header manipulation
 
+____
+Things people miss
 
-## auth checking:
-
-Login page:
-
- Default creds (common pairs)
-
- Weak creds (username=username)
-
- SQLi on login
-
- Response difference analysis
-
- Account lockout?
-
- Password reset logic?
-
- Registration logic abuse?
-
- Role-based access checks?
-
-If creds found:
-
- Reuse across services
-
- Check admin panels
-
- Check API endpoints
-
-
-## core vulns
-🔹 SQL Injection
-
- Error-based
-
- Boolean-based
-
- Time-based
-
-🔹 Command Injection
-
- ; && || |
-
- Newline (%0a)
-
- $() / backticks
-
- Blind timing tests
-
-🔹 File Inclusion
-
- LFI (../ traversal)
-
- Log poisoning
-
- /proc/self/environ
- /proc/self/cmdline
- /proc/self/cwd
-
- RFI (if applicable)
-
-🔹 SSTI
-
-Test reflection:
-
- {{7*7}}
-
- ${7*7}
-
- <%= 7*7 %>
-
-If evaluates → escalate.
-
-🔹 XSS
-
- Reflected
-
- Stored
-
- DOM-based
-
-(Useful sometimes for admin takeover.)
-
-
-## file upload
-
-If upload exists:
-
- Extension bypass
-
- Double extension
-
- MIME bypass
-
- Magic bytes
-
- Rename after upload?
-
- Executable in webroot?
-
- .htaccess upload:
-
- Upload location discovery
-
-
-## bad access control:
- IDOR (change ID numbers)
-
- Forced browsing
-
- Access admin without auth?
-
- Modify cookies?
-
- Change role in JWT?
-
- jwt/flask cookie cracking:
-
-Session fixation?
-Privilege escalation via parameter tampering?
-
-
-##
-Any debug functionality exposed?
-
-
-
-
-
-
-
-
-
+HTML comments on every single page including error pages
+Source code of every JS file
+All dotfiles (.bashrc, .bash_profile, .env etc.) if you get file read
+Backup files of known pages (index.php.bak, index.php~)
+Parameter pollution and unexpected HTTP methods (PUT, DELETE, PATCH)
