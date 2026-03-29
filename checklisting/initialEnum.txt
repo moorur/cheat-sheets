@@ -1,0 +1,16 @@
+Initial Enumeration
+
+nmap full port scan (-p-), then service/version scan on found ports (-sV -sC)
+
+
+UDP scan on top ports (--top-ports 100 -sU)
+
+
+Note every service, version, and port — don't skip anything that looks boring
+
+
+Check for known CVEs on every version found
+
+
+Run autorecon or similar if time allows
+
