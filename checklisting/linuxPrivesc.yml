@@ -1,276 +1,54 @@
-🔥 Linux Privilege Escalation Checklist (OSCP-Oriented)
-1️⃣ Initial Context
-Current user:
-Hostname:
-Kernel version:
-Architecture:
-Distribution:
-Shell type:
+Linux Privesc
 
+sudo -l — always, even without a password (NOPASSWD entries)
+SUID binaries — find / -perm -4000 2>/dev/null — check GTFOBins
 
-Check:
 
-id
-uname -a
-cat /etc/os-release
-sudo -l
+SGID binaries — find / -perm -2000 2>/dev/null
 
-2️⃣ Immediate Wins
-🔹 Sudo
-sudo -l
 
+Capabilities — getcap -r / 2>/dev/null
 
-Check:
+Writable files owned by root — find / -writable -not -path "/proc/*" 2>/dev/null
 
-Can run as root?
+Cron jobs — /etc/crontab, /var/spool/cron, /etc/cron.*, check for writable scripts
 
-NOPASSWD?
 
-Wildcards?
+PATH hijacking — writable directory early in PATH, root running something without full path
 
-Specific binaries allowed?
 
-Environment variables preserved?
+Running processes — ps aux pspy, look for anything running as root
 
-Sudo is one of the most common OSCP wins.
 
-🔹 SUID Binaries
-find / -perm -4000 2>/dev/null
+Internal ports — ss -tlnp or netstat -tlnp — anything listening on localhost only
 
 
-Check:
+Installed software versions — check for local privesc CVEs
 
-Non-standard binaries
 
-Writable SUID files?
+Readable /etc/shadow or /etc/passwd writable
 
-GTFOBins applicable?
 
-Custom programs?
+Reused passwords — try every credential you found everywhere
 
-Reminder:
 
-Custom SUID > standard SUID
+All dotfiles in every home directory — .bashrc, .bash_profile, .profile, .env, .bash_history
 
-🔹 Capabilities
-getcap -r / 2>/dev/null
 
+Config files for every service — database configs, app configs, anything with credentials
 
-Look for:
 
-cap_setuid
+Log files — sometimes credentials passed as arguments show up in logs
 
-cap_setgid
 
-cap_sys_admin
+NFS with no_root_squash
 
-Capabilities are often overlooked.
 
-3️⃣ Cron Jobs
+Docker/LXC group membership
 
-Check:
 
-crontab -l
-cat /etc/crontab
-ls -la /etc/cron*
+Writable service files or systemd units
 
 
-Look for:
+linpeas, but don't stop there if it finds nothing
 
-Writable scripts?
-
-Writable directories?
-
-Running as root?
-
-Wildcard usage?
-
-Cron misconfigs are common.
-
-4️⃣ Writable Files / Directories
-
-Search for:
-
-Writable directories owned by root
-
-Writable scripts executed by root
-
-Writable service binaries
-
-Key locations:
-
-/etc/
-/opt/
-/usr/local/
-/var/www/
-/home/
-/tmp/
-
-
-Decision trigger:
-
-Is root executing anything from a writable location?
-
-5️⃣ Services / Processes
-
-Check:
-
-ps aux
-
-
-Look for:
-
-Custom services
-
-Services running as root
-
-Paths to service binaries
-
-Misconfigured startup scripts
-
-If systemd:
-
-systemctl list-units --type=service
-
-
-Check:
-
-Writable service files?
-
-Writable ExecStart paths?
-
-6️⃣ Credential Hunting (Very Important)
-
-Search for:
-
-config files
-database credentials
-backup files
-history files
-.env files
-SSH keys
-
-
-Check:
-
-/home/*/.ssh/
-/root/
-/var/www/
-/opt/
-/etc/
-/backup/
-/mnt/
-
-
-Also:
-
-cat ~/.bash_history
-
-
-Credential reuse is huge in OSCP.
-
-7️⃣ NFS
-
-Check:
-
-cat /etc/exports
-
-
-If NFS share:
-
-no_root_squash?
-
-Writable?
-
-Mountable?
-
-NFS misconfig is a classic privesc.
-
-8️⃣ Docker / Containers
-
-Check:
-
-groups
-
-
-If user in:
-
-docker
-lxd
-
-
-Possible container breakout.
-
-Also check:
-
-/var/run/docker.sock
-
-9️⃣ PATH Hijacking
-
-Check:
-
-echo $PATH
-
-
-Look for:
-
-Writable directories in PATH
-
-Root scripts calling binaries without full path
-
-Common trick.
-
-🔟 Kernel Exploits (Last Resort)
-
-Only if:
-
-Old kernel
-
-No misconfigs found
-
-Checklist:
-
-Check exact kernel version
-Search for known privilege escalation exploits
-Verify exploit stability
-Test carefully
-
-
-Do not jump here early.
-
-11️⃣ Network / Internal Services
-
-Sometimes local privesc is:
-
-Redis running as root
-
-MySQL with weak creds
-
-Local-only service accessible
-
-Check:
-
-netstat -tulnp
-ss -tulnp
-
-12️⃣ SSH Keys
-
-Check:
-
-Private keys readable?
-
-Reuse?
-
-Root SSH access allowed?
-
-13️⃣ If Stuck Reminder
-
-Add this at bottom:
-
-Re-check sudo
-Re-check SUID
-Re-check cron
-Re-check writable scripts
-Search for credentials again
-Look for custom binaries
-Think misconfiguration, not exploit
