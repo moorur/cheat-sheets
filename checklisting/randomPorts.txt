@@ -1,0 +1,85 @@
+Other Services / Random Ports
+FTP
+Anonymous login
+
+
+Read everything, write access to anywhere useful
+
+
+Check if writable directory is served by web or executed anywhere
+
+____
+
+SMB
+
+Null/anonymous session (smbclient, crackmapexec, enum4linux)
+
+
+List all shares, read everything
+
+
+Check for writable shares
+
+
+Look for credentials in config files
+
+
+____
+SSH
+
+If you have a key anywhere — try it
+
+
+Check known_hosts, authorized_keys if you get file read
+
+____
+
+SMTP/POP3/IMAP
+
+User enumeration (VRFY, RCPT TO)
+Read emails if you get access — credentials often here
+
+___
+
+SNMP
+Community strings (public, private, manager)
+
+
+Enumerate with snmpwalk — often reveals users, running processes, installed software
+
+
+___
+
+NFS
+List exports (showmount -e)
+
+
+Mount and read everything
+
+
+Check if you can write and drop an SSH key
+
+___
+MySQL/MSSQL/PostgreSQL
+
+Default or reused credentials
+
+
+File read/write (LOAD DATA, OUTFILE, xp_cmdshell, COPY TO/FROM)
+
+
+UDF exploitation for command execution (PostgreSQL DLL import especially)
+
+___ 
+
+
+Unknown ports
+
+Banner grab manually with nc
+
+
+Interact with it manually before assuming it's useless
+
+
+Google any banner or service identifier you don't recognize
+
