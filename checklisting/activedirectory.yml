@@ -1,66 +1,28 @@
-## initial
+Active Directory
+Enumeration (with credentials)
 
-Domain Info
+bloodhound-python or SharpHound — always, immediately
+Look for shortest path to DA in Bloodhound
+Kerberoastable accounts — GetUserSPNs.py
+ASREPRoastable accounts — GetNPUsers.py
+Password spray with known usernames — every service, every machine
+list of what ive sprayed:
 
-  Domain:
-  DC:
-  OS:
+Check for unconstrained/constrained delegation
+Look for DCSync rights, GenericAll, WriteDACL, WriteOwner on any interesting objects
 
-SMB (Unauthenticated)
+Lateral movement
 
-  RID brute
-  
-  LDAP deeper search
-  
-  Check shares for usernames
-  
-  Check web app for usernames
+Pass the hash — try every hash you find everywhere
+Pass the ticket
+Overpass the hash
+Check every machine you compromise for cached credentials, tickets, interesting files
+Look for local admin rights on other machines with your current user
 
-findings:
+Things people miss
 
-  
-  LDAP (Anonymous Bind?)
-
-findings:
-
-
-Kerberos
-
-  Kerberoast check:
-  AS-REP roast check:
-
-If Creds Found
-
-  Re-enumerate SMB
-  
-  Re-enumerate LDAP
-  
-  Check WinRM
-  
-  Check RDP
-  
-  Check MSSQL
-  
-  Collect BloodHound
-
-
-## post foothold
-  initial:
-  Who am I:
-  Groups:
-  Privileges:
-  Local admin anywhere:
-  Password reuse:
-
-every new user:
-  SMB shares (auth)
-  Bloodhound
-  LDAP full dump
-  SPNs
-  
-
-
-
-
-
-
+SYSVOL/NETLOGON shares — scripts, Group Policy Preferences with cpassword
+Description fields in AD — admins sometimes put passwords there
+ACL abuse chains in Bloodhound that aren't the obvious shortest path
+Machine accounts having interesting permissions
+Old/disabled accounts sometimes have reused passwords still valid elsewhere
