@@ -38,6 +38,8 @@ Test for LFI/RFI on any parameter that looks like it loads a file
 
 Check for IDOR on any ID-based parameters
 
+Check for eval literally everywhere, every endpoint try dummy data and 7*7 or something, every endpoint
+
 
 Test authentication — default creds, weak passwords, type juggling, JWT manipulation
 
