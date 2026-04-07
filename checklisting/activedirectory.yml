@@ -1,28 +1,161 @@
 Active Directory
-Enumeration (with credentials)
+Enumeration (NO creds)
 
-bloodhound-python or SharpHound — always, immediately
-Look for shortest path to DA in Bloodhound
-Kerberoastable accounts — GetUserSPNs.py
-ASREPRoastable accounts — GetNPUsers.py
-Password spray with known usernames — every service, every machine
+Identify domain:
+
+ldapsearch, nmap, SMB banner grabbing
+Domain name, DC hostname, OS version
+
+Users:
+
+kerbrute userenum (if possible)
+
+Shares:
+
+smbclient -L
+null/guest access
+
+→ Note usernames, shares, policies, anything readable
+
+Enumeration (WITH creds)
+
+BloodHound (always, early):
+
+bloodhound-python / SharpHound
+Don’t just shortest path → look for:
+GenericAll / GenericWrite
+WriteDACL / WriteOwner
+ForceChangePassword
+AddMember / AddSelf
+
+Users & accounts:
+
+Kerberoast → GetUserSPNs.py
+ASREPRoast → GetNPUsers.py
+Check for password reuse patterns (names, seasons, years)
+
+Password attacks:
+
+Password spray (controlled)
+Try creds on:
+SMB
+WinRM
+RDP
+LDAP
+
+→ keep your:
+
 list of what ive sprayed:
 
-Check for unconstrained/constrained delegation
-Look for DCSync rights, GenericAll, WriteDACL, WriteOwner on any interesting objects
+Shares:
 
-Lateral movement
+Enumerate ALL accessible shares
+Look for:
+scripts
+configs
+backups
+credentials
+Privilege Escalation (AD objects)
 
-Pass the hash — try every hash you find everywhere
-Pass the ticket
-Overpass the hash
-Check every machine you compromise for cached credentials, tickets, interesting files
-Look for local admin rights on other machines with your current user
+From BloodHound + manual checks:
 
+DCSync rights
+GenericAll / GenericWrite
+WriteDACL / WriteOwner
+ForceChangePassword
+
+Delegation:
+
+Unconstrained
+Constrained
+Resource-based constrained delegation (RBCD)
+
+→ If you see control over an object, ask: “what can I force it to do?”
+
+Lateral Movement
+
+Credentials reuse:
+
+Pass-the-Hash
+Pass-the-Ticket
+Overpass-the-Hash
+
+Test access:
+
+crackmapexec → where am I local admin?
+
+On every compromised machine:
+
+Check:
+cached creds
+LSASS (if applicable)
+config files
+user desktops/downloads
+
+→ Re-use creds everywhere immediately
+
+Host Enumeration (THIS WAS MISSING)
+
+On any Windows shell:
+
+whoami /all
+ipconfig /all
+net user /domain
+net group /domain
+net localgroup administrators
+
+Check:
+
+Installed software
+Running services
+Scheduled tasks
+Startup scripts
+
+→ Look for creds, writable paths, misconfigs
+
+SYSVOL / GPO (high-yield, keep prominent)
+SYSVOL / NETLOGON:
+scripts
+passwords
+config files
+Group Policy Preferences:
+cpassword
 Things people miss
 
-SYSVOL/NETLOGON shares — scripts, Group Policy Preferences with cpassword
-Description fields in AD — admins sometimes put passwords there
-ACL abuse chains in Bloodhound that aren't the obvious shortest path
-Machine accounts having interesting permissions
-Old/disabled accounts sometimes have reused passwords still valid elsewhere
+Description fields in AD
+→ passwords sometimes stored there
+
+ACL abuse chains in BloodHound
+→ not just shortest path
+
+Machine accounts
+→ can have privileges
+
+Old/disabled accounts
+→ password reuse
+
+Writable shares
+→ can lead to code execution
+
+NEW: Re-enumeration triggers (CRITICAL for you)
+
+When you find:
+
+New user → re-run:
+spraying
+Kerberoast / ASREP
+New creds → re-run:
+BloodHound
+share enum
+lateral movement
+New machine → check:
+local admin access
+shares
+sessions
+NEW: Quick mental loop (keep it small)
+
+For any credential / access:
+
+Where else does this work?
+What can this control?
+What can I read with this?
