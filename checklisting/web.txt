@@ -1,60 +1,83 @@
 Web
-
 Enumeration
 
-Directory/file fuzzing (feroxbuster/ffuf) with a solid wordlist, include extensions (.php .txt .bak .old .html .js .config)
-
+Directory/file fuzzing (feroxbuster/ffuf) with a solid wordlist
+→ include extensions: .php .txt .bak .old .html .js .config
+→ also try: .zip .tar .gz .sql .log .swp
+→ note patterns in discovered paths (naming conventions, IDs, structure)
 
 Fuzz for vhosts
 
+Check:
 
-Check robots.txt, sitemap.xml, .git, .env, .htaccess
+robots.txt, sitemap.xml
+.git, .env, .htaccess
+.DS_Store, web.config (Windows targets)
 
+View page source on every page
+→ comments, hidden fields, hardcoded credentials
 
-View page source on every page — comments, hidden fields, hardcoded credentials
+Check all JS files
+→ endpoints, credentials, tokens
+→ look for API paths, parameter names, hidden functionality
 
+Look at all cookies
+→ decode/inspect them
+→ check for JWT / base64 / serialized data
 
-Check all JS files for endpoints, credentials, tokens
+Check HTTP headers
+→ anything unusual
+→ tech stack clues (frameworks, server types)
 
-
-Look at all cookies — decode/inspect them
-
-
-Check HTTP headers for anything unusual
-
-
-_______________
+→ Identify tech stack explicitly (CMS, framework, versions, plugins)
 
 Functionality
+🔹 Core input testing (replace your big list mentally with this loop)
 
-Test every input field for SQLi, XSS, command injection, SSTI
+For every input (params, headers, cookies, uploads):
 
+Reflection test
+Interpretation test → 7*7, {{7*7}}, ${7*7}
+Execution test → ;id, |whoami
+File/reference test → ../../etc/passwd, IDs
 
-Test file upload — bypass extension filters, content-type, magic bytes
+(then go deeper only if something reacts)
 
+Test file upload
+→ bypass extension filters, content-type, magic bytes
+→ try double extensions, null bytes, case variations
 
-Test for LFI/RFI on any parameter that looks like it loads a file
+Test for LFI/RFI
+→ any parameter that loads files
+→ try wrappers (php://filter, etc.) if applicable
 
+Check for IDOR
+→ any ID-based parameters
+→ try incrementing, swapping, accessing as other users
 
-Check for IDOR on any ID-based parameters
+Test authentication
+→ default creds, weak passwords
+→ type juggling, JWT manipulation
+→ password reset / forgot password flows
 
-Check for eval literally everywhere, every endpoint try dummy data and 7*7 or something, every endpoint
+Check for exposed API endpoints
+→ how they handle unexpected input
+→ test with different methods (GET/POST/PUT/PATCH/DELETE)
 
+Look for verbose error messages
+→ stack traces reveal code/paths/params
 
-Test authentication — default creds, weak passwords, type juggling, JWT manipulation
-
-
-Check for exposed API endpoints and how they handle unexpected input
-
-
-Look for verbose error messages — stack traces often reveal code and parameters
-
-
-____
 Things people miss
 
-HTML comments on every single page including error pages
+HTML comments on every page (including error pages)
+
 Source code of every JS file
-All dotfiles (.bashrc, .bash_profile, .env etc.) if you get file read
-Backup files of known pages (index.php.bak, index.php~)
-Parameter pollution and unexpected HTTP methods (PUT, DELETE, PATCH)
+
+All dotfiles if file read is possible
+→ (.bashrc, .bash_profile, .env, etc.)
+
+Backup files
+→ (index.php.bak, index.php~, etc.)
+
+Parameter pollution
+Unexpected HTTP methods (PUT, DELETE, PATCH)
