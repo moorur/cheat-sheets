@@ -50,5 +50,8 @@ Docker/LXC group membership
 Writable service files or systemd units
 
 
+Completely read through interesting files, very thoroughly, a password or a hash could be there
+
+
 linpeas, but don't stop there if it finds nothing
 
