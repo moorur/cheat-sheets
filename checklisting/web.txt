@@ -17,6 +17,8 @@ robots.txt, sitemap.xml
 View page source on every page
 → comments, hidden fields, hardcoded credentials
 
+View page text itself, look for usernames, passwords, links to other pages
+
 Check all JS files
 → endpoints, credentials, tokens
 → look for API paths, parameter names, hidden functionality
