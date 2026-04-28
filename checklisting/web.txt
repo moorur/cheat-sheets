@@ -14,6 +14,8 @@ robots.txt, sitemap.xml
 .git, .env, .htaccess
 .DS_Store, web.config (Windows targets)
 
+Check Public exploits, not just the AI overview, look through the actual output of the search as well
+
 View page source on every page
 → comments, hidden fields, hardcoded credentials
 
