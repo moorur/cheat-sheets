@@ -4,6 +4,7 @@ Enumeration
 Directory/file fuzzing (feroxbuster/ffuf) with a solid wordlist
 → include extensions: .php .txt .bak .old .html .js .config
 → also try: .zip .tar .gz .sql .log .swp
+→ also fuckign explore subdirectories, even /assets/ and stuff that wouldnt make sense
 → note patterns in discovered paths (naming conventions, IDs, structure)
 
 Fuzz for vhosts
