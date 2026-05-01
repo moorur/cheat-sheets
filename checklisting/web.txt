@@ -22,6 +22,8 @@ View page source on every page
 
 View page text itself, look for usernames, passwords, links to other pages
 
+Reuse the usernames found everywhere - ssh, login pages, ftp, smb..
+
 Check all JS files
 → endpoints, credentials, tokens
 → look for API paths, parameter names, hidden functionality
