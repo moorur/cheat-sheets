@@ -1,90 +1,178 @@
-Web
-Enumeration
+# Web Checklist
 
-Directory/file fuzzing (feroxbuster/ffuf) with a solid wordlist
-→ include extensions: .php .txt .bak .old .html .js .config
-→ also try: .zip .tar .gz .sql .log .swp
-→ also fuckign explore subdirectories, even /assets/ and stuff that wouldnt make sense
-→ note patterns in discovered paths (naming conventions, IDs, structure)
+---
 
-Fuzz for vhosts
+## Enumeration
 
-Check:
+- [ ] Directory/file fuzzing (feroxbuster/ffuf) — solid wordlist
+  - extensions: `.php .txt .bak .old .html .js .config .zip .tar .gz .sql .log .swp`
+  - recurse into discovered dirs, even /assets/ and stuff that wouldn't make sense
+  - note naming patterns — if you see /user/1 there's probably /user/2
+  - fuzzed:
 
-robots.txt, sitemap.xml
-.git, .env, .htaccess
-.DS_Store, web.config (Windows targets)
+- [ ] Fuzz for vhosts
+  - found:
 
-Check Public exploits, not just the AI overview, look through the actual output of the search as well
+- [ ] Check: `robots.txt`, `sitemap.xml`
 
-View page source on every page
-→ comments, hidden fields, hardcoded credentials
+- [ ] Check: `.git` `.env` `.htaccess` `.DS_Store` `web.config` (Windows)
+  - if .git exists → `git log`, `git show`, dump with git-dumper
+  - found:
 
-View page text itself, look for usernames, passwords, links to other pages
+- [ ] Check public exploits — read actual results, not just the AI overview
 
-Reuse the usernames found everywhere - ssh, login pages, ftp, smb..
+- [ ] Identify full tech stack (CMS, framework, versions, plugins)
+  - HTTP headers → server type, X-Powered-By, framework hints
+  - Wappalyzer if you want a quick pass
+  - stack:
+  - known CVEs:
 
-Check all JS files
-→ endpoints, credentials, tokens
-→ look for API paths, parameter names, hidden functionality
+- [ ] View page source on every page
+  - HTML comments, hidden fields, hardcoded creds
+  - found:
 
-Look at all cookies
-→ decode/inspect them
-→ check for JWT / base64 / serialized data
+- [ ] Read the actual page text — usernames, links, version numbers, clues
+  - found:
 
-Check HTTP headers
-→ anything unusual
-→ tech stack clues (frameworks, server types)
+- [ ] Check all JS files
+  - API paths, endpoints, parameter names, tokens, creds
+  - look for environment-specific comments (dev/staging URLs)
+  - found:
 
-→ Identify tech stack explicitly (CMS, framework, versions, plugins)
+- [ ] Inspect all cookies
+  - decode base64, check for JWT, serialized data, predictable values
+  - found:
 
-Functionality
-🔹 Core input testing (replace your big list mentally with this loop)
+- [ ] Check HTTP response headers on every different page/endpoint — they change
+  - found:
 
-For every input (params, headers, cookies, uploads):
+- [ ] Reuse all found usernames everywhere — SSH, FTP, SMB, login pages
+  - usernames:
+  - tried on:
 
-Reflection test
-Interpretation test → 7*7, {{7*7}}, ${7*7}
-Execution test → ;id, |whoami
-File/reference test → ../../etc/passwd, IDs
+---
 
-(then go deeper only if something reacts)
+## Functionality — input testing loop
 
-Test file upload
-→ bypass extension filters, content-type, magic bytes
-→ try double extensions, null bytes, case variations
+> For EVERY input (params, headers, cookies, body fields, uploads) run through this:
 
-Test for LFI/RFI
-→ any parameter that loads files
-→ try wrappers (php://filter, etc.) if applicable
+- [ ] Reflection test → does input echo back? (→ XSS)
+  - found:
 
-Check for IDOR
-→ any ID-based parameters
-→ try incrementing, swapping, accessing as other users
+- [ ] Interpretation test → `7*7` `{{7*7}}` `${7*7}` `<%= 7*7 %>` (→ SSTI)
+  - found:
 
-Test authentication
-→ default creds, weak passwords
-→ type juggling, JWT manipulation
-→ password reset / forgot password flows
+- [ ] Execution test → `;id` `|whoami` `` `id` `` (→ command injection)
+  - found:
 
-Check for exposed API endpoints
-→ how they handle unexpected input
-→ test with different methods (GET/POST/PUT/PATCH/DELETE)
+- [ ] File/path test → `../../etc/passwd` (→ LFI)
+  - found:
 
-Look for verbose error messages
-→ stack traces reveal code/paths/params
+- [ ] ID test → increment, swap, remove (→ IDOR)
+  - found:
 
-Things people miss
+---
 
-HTML comments on every page (including error pages)
+- [ ] File upload
+  - bypass extension filters: double ext, null bytes, case, content-type swap
+  - magic bytes if content is validated
+  - where does the file go after upload? can you reach it?
+  - notes:
 
-Source code of every JS file
+- [ ] LFI/RFI — any param that loads a file or path
+  - try `php://filter` `php://input` `data://` wrappers if PHP
+  - log poisoning if you can write to a log (user-agent → `/var/log/apache2/access.log`)
+  - `/proc/self/environ`, `/proc/self/cmdline` worth trying
+  - params tested:
 
-All dotfiles if file read is possible
-→ (.bashrc, .bash_profile, .env, etc.)
+- [ ] IDOR — every ID-based param
+  - try as unauthenticated, as different user, with different HTTP methods
+  - GUIDs aren't safe either — if you can register two accounts, test cross-account
+  - params tested:
 
-Backup files
-→ (index.php.bak, index.php~, etc.)
+- [ ] Authentication
+  - default/weak creds, credential stuffing with found usernames
+  - password reset / forgot password flows — token predictability, host header injection
+  - JWT: alg:none, weak secret, kid injection
+  - type juggling if PHP (loose comparisons)
+  - auth bypass: SQLi on login, empty password, array params
+  - username enumeration via timing or different error messages
+  - tried:
 
-Parameter pollution
-Unexpected HTTP methods (PUT, DELETE, PATCH)
+- [ ] SSRF — any param that fetches a URL or hostname
+  - try: `127.0.0.1` `169.254.169.254` `10.x` `192.168.x`
+  - bypass filters: `http://0.0.0.0` decimal IPs, `http://127.1`
+  - params tested:
+
+- [ ] API endpoints
+  - try all methods: GET POST PUT PATCH DELETE OPTIONS
+  - test with no auth header, different user's token
+  - fuzz undocumented endpoints from JS files
+  - check if v1 endpoint still exists when you're on v2
+  - found:
+
+- [ ] Verbose error messages → stack traces reveal paths, params, versions
+  - trigger with: unexpected types, missing params, very long input, null bytes
+  - found:
+
+- [ ] Rate limiting — test login, password reset, OTP fields
+  - if rate limited by IP try `X-Forwarded-For: 127.0.0.1`
+  - notes:
+
+---
+
+## Conditionals — only if you see these
+
+### if you see XML input
+- [ ] XXE → inject external entity, try `file:///etc/passwd`
+- [ ] blind XXE → OOB with external DTD
+- notes:
+
+### if you see a search / query field
+- [ ] SQLi → `'` `"` `OR 1=1--` UNION SELECT, error-based, blind time-based
+- [ ] NoSQLi → `{"$gt":""}` `[$ne]=` `{"$where":"1==1"}`
+- [ ] LDAP injection if auth looks directory-backed
+- notes:
+
+### if you see a redirect / URL param
+- [ ] open redirect → try combining with other flows (password reset, OAuth)
+- notes:
+
+### if you see a template / email / report generator
+- [ ] SSTI deeper → `{{config}}` `{{self.__class__}}`, Jinja2/Twig/Freemarker payloads
+- [ ] HTML injection → if rendered to PDF try `<script>` `<img src=x>`
+- notes:
+
+### if you see deserialization (Java, PHP, .NET)
+- [ ] PHP: object injection via `O:4:"User":...`
+- [ ] Java: ysoserial payloads — identify the library first
+- [ ] check `Content-Type: application/x-java-serialized-object`
+- notes:
+
+### if you see WebSockets
+- [ ] intercept in Burp → same injection tests as HTTP params
+- [ ] check if auth is enforced per-message or just on handshake
+- notes:
+
+---
+
+## Things people miss
+
+- [ ] HTML comments on error pages specifically, not just main pages
+- [ ] Backup files: `index.php.bak` `index.php~` `config.php.old`
+- [ ] Parameter pollution: `param=a&param=b` — which value does the app use?
+- [ ] HTTP method override: `X-HTTP-Method-Override: PUT` in a POST request
+- [ ] Dotfiles if you have file read: `.bashrc` `.bash_history` `.env` `.ssh/id_rsa`
+- [ ] Source of every JS file, not just the main bundle
+- [ ] Admin paths even if not linked: `/admin` `/manager` `/console` `/phpmyadmin` `/dashboard`
+- [ ] Second-order injection — input stored then rendered elsewhere (profile page, logs, emails)
+- [ ] Retest everything after you get auth — behavior changes a lot
+- [ ] If you find creds → try them on every other service immediately
+- [ ] Chain low-severity bugs — IDOR + upload, redirect + reset token, etc.
+- [ ] 403 on a path doesn't mean dead — try appending `/` or `/.` or changing method
+- [ ] Integer/type params: send a string, send negative, send 0, send very large number
+- [ ] If the app has a "remember me" or persistent session — inspect that token separately
+
+---
+
+## Notes
